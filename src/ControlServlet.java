@@ -19,10 +19,18 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 
-
 public class ControlServlet extends HttpServlet {
 	    private static final long serialVersionUID = 1L;
 	    private userDAO userDAO = new userDAO();
+	    private adminDAO adminDAO = new adminDAO();
+	    private clientDAO clientDAO = new clientDAO();
+	    private billDetailsDAO billDetailsDAO = new billDetailsDAO();
+	    private orderdetailsDAO orderdetailsDAO = new orderdetailsDAO();
+	    private quoteDAO quoteDAO = new quoteDAO();
+	    private treeInformationDAO treeInformationDAO = new treeInformationDAO();
+	    private treePictureDAO treePictureDAO = new treePictureDAO();
+	    private treeRequestDAO treeRequestDAO = new treeRequestDAO();
+	    
 	    private String currentUser;
 	    private HttpSession session=null;
 	    
@@ -34,6 +42,13 @@ public class ControlServlet extends HttpServlet {
 	    public void init()
 	    {
 	    	userDAO = new userDAO();
+	    	adminDAO = new adminDAO();
+	    	billDetailsDAO = new billDetailsDAO();
+	    	orderdetailsDAO = new orderdetailsDAO();
+	    	quoteDAO = new quoteDAO();
+	    	treeInformationDAO = new treeInformationDAO();
+	    	treePictureDAO = new treePictureDAO();
+	    	treeRequestDAO = new treeRequestDAO();
 	    	currentUser= "";
 	    }
 	    
@@ -46,7 +61,7 @@ public class ControlServlet extends HttpServlet {
 	        System.out.println(action);
 	    
 	    try {
-        	switch(action) {  
+      	switch(action) {  
         	case "/login":
         		login(request,response);
         		break;
@@ -55,19 +70,20 @@ public class ControlServlet extends HttpServlet {
         		break;
         	case "/initialize":
         		userDAO.init();
+        		request.setAttribute("listAdmin", adminDAO.listAllAdmins());
+            	request.setAttribute("listBillDetails", billDetailsDAO.listAllBillDetails());
+            	request.setAttribute("listClient", clientDAO.listAllClient());
+            	request.setAttribute("listOrderDetails", orderdetailsDAO.listAllOrderDetails());
+            	request.setAttribute("listQuote", quoteDAO.listAllQuote());
+            	request.setAttribute("listTreeInformation", treeInformationDAO.listAllTreeInformation());
+            	request.setAttribute("listTreePicture", treePictureDAO.listAllTreePicture());
+            	request.setAttribute("listTreeRequest", treeRequestDAO.listAllTreeRequest());
+            	request.getRequestDispatcher("admin_dashboard.jsp").forward(request, response);
         		System.out.println("Database successfully initialized!");
-        		rootPage(request,response,"");
-        		break;
-        	case "/root":
-        		rootPage(request,response, "");
         		break;
         	case "/logout":
         		logout(request,response);
         		break;
-        	 case "/UserList": 
-                 System.out.println("The action is: list");
-                 listUser(request, response);           	
-                 break;
 	    	}
 	    }
 	    catch(Exception ex) {
@@ -75,42 +91,36 @@ public class ControlServlet extends HttpServlet {
 	    	}
 	    }
         	
-	    private void listUser(HttpServletRequest request, HttpServletResponse response)
-	            throws SQLException, IOException, ServletException {
-	        System.out.println("listUser started: 00000000000000000000000000000000000");
-
-	     
-	        List<user> listUser = userDAO.listAllUsers();
-	        request.setAttribute("listUser", listUser);       
-	        RequestDispatcher dispatcher = request.getRequestDispatcher("UserList.jsp");       
-	        dispatcher.forward(request, response);
-	     
-	        System.out.println("listPeople finished: 111111111111111111111111111111111111");
-	    }
-	    	        
-	    private void rootPage(HttpServletRequest request, HttpServletResponse response, String view) throws ServletException, IOException, SQLException{
-	    	System.out.println("root view");
-			request.setAttribute("listUser", userDAO.listAllUsers());
-	    	request.getRequestDispatcher("rootView.jsp").forward(request, response);
-	    }
-	    
-	    
 	    protected void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-	    	 String email = request.getParameter("email");
+	    	 String username = request.getParameter("username");
 	    	 String password = request.getParameter("password");
 	    	 
-	    	 if (email.equals("root") && password.equals("root1234")) {
+	    	 if (username.equals("root") && password.equals("root1234")) {
 				 System.out.println("Login Successful! Redirecting to root");
 				 session = request.getSession();
-				 session.setAttribute("username", email);
-				 rootPage(request, response, "");
+				 session.setAttribute("username", username);
+				// rootPage(request, response, "");
 	    	 }
-	    	 else if(userDAO.isValid(email, password)) 
+	    	 else if(userDAO.isValid(username, password) != null) 
 	    	 {
-			 	 
-			 	 currentUser = email;
+			 	 String role = userDAO.isValid(username, password);
+			 	 currentUser = username;
 				 System.out.println("Login Successful! Redirecting");
-				 request.getRequestDispatcher("activitypage.jsp").forward(request, response);
+				 if ("David Smith".equals(role)) {
+					 request.getRequestDispatcher("david_smith_dashboard.jsp").forward(request, response);
+	                } else if ("Client".equals(role)) {
+	                	request.getRequestDispatcher("client_dashboard.jsp").forward(request, response);
+	                } else if  ("Admin Root".equals(role)) {
+	                	request.setAttribute("listAdmin", adminDAO.listAllAdmins());
+	                	request.setAttribute("listBillDetails", billDetailsDAO.listAllBillDetails());
+	                	request.setAttribute("listClient", clientDAO.listAllClient());
+	                	request.setAttribute("listOrderDetails", orderdetailsDAO.listAllOrderDetails());
+	                	request.setAttribute("listQuote", quoteDAO.listAllQuote());
+	                	request.setAttribute("listTreeInformation", treeInformationDAO.listAllTreeInformation());
+	                	request.setAttribute("listTreePicture", treePictureDAO.listAllTreePicture());
+	                	request.setAttribute("listTreeRequest", treeRequestDAO.listAllTreeRequest());
+	                	request.getRequestDispatcher("admin_dashboard.jsp").forward(request, response);
+	                }
 			 			 			 			 
 	    	 }
 	    	 else {
@@ -120,22 +130,22 @@ public class ControlServlet extends HttpServlet {
 	    }
 	           
 	    private void register(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-	    	String email = request.getParameter("email");
-	   	 	String firstName = request.getParameter("firstName");
-	   	 	String lastName = request.getParameter("lastName");
+	    	String username = request.getParameter("username");
 	   	 	String password = request.getParameter("password");
-	   	 	String birthday = request.getParameter("birthday");
-	   	 	String adress_street_num = request.getParameter("adress_street_num"); 
-	   	 	String adress_street = request.getParameter("adress_street"); 
-	   	 	String adress_city = request.getParameter("adress_city"); 
-	   	 	String adress_state = request.getParameter("adress_state"); 
-	   	 	String adress_zip_code = request.getParameter("adress_zip_code"); 	   	 	
+	   	 	String role = request.getParameter("role");	   	 	
 	   	 	String confirm = request.getParameter("confirmation");
 	   	 	
 	   	 	if (password.equals(confirm)) {
-	   	 		if (!userDAO.checkEmail(email)) {
+	   	 		if (!userDAO.checkUsername(username)) {
 		   	 		System.out.println("Registration Successful! Added to database");
-		            user users = new user(email,firstName, lastName, password, birthday, adress_street_num,  adress_street,  adress_city,  adress_state,  adress_zip_code, 1000,0);
+		            user users = new user(username, password, role);
+		            System.out.println(role);
+		            if(role.equalsIgnoreCase("Admin Root")) {
+		            	System.out.println("Inside admin root");
+		            	long millis=System.currentTimeMillis();  
+		            	admin admin = new admin(username,password,"Account created",new java.sql.Date(millis));
+		            	adminDAO.insert(admin);
+		            } 
 		   	 		userDAO.insert(users);
 		   	 		response.sendRedirect("login.jsp");
 	   	 		}

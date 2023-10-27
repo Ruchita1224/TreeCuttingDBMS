@@ -14,10 +14,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
-//import java.sql.Connection;
-//import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-//import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 /**
@@ -45,25 +42,12 @@ public class userDAO
             } catch (ClassNotFoundException e) {
                 throw new SQLException(e);
             }
-            connect = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/testdb?allowPublicKeyRetrieval=true&useSSL=false&user=root&password=root1234");
+            connect = (Connection) DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/treecuttingdb?allowPublicKeyRetrieval=true&useSSL=false&user=root&password=root1234");
             System.out.println(connect);
+            System.out.println("Connection successfull");
         }
     }
     
-    public boolean database_login(String email, String password) throws SQLException{
-    	try {
-    		connect_func("root","root1234");
-    		String sql = "select * from user where email = ?";
-    		preparedStatement = connect.prepareStatement(sql);
-    		preparedStatement.setString(1, email);
-    		ResultSet rs = preparedStatement.executeQuery();
-    		return rs.next();
-    	}
-    	catch(SQLException e) {
-    		System.out.println("failed login");
-    		return false;
-    	}
-    }
 	//connect to the database 
     public void connect_func(String username, String password) throws SQLException {
         if (connect == null || connect.isClosed()) {
@@ -73,43 +57,13 @@ public class userDAO
                 throw new SQLException(e);
             }
             connect = (Connection) DriverManager
-  			      .getConnection("jdbc:mysql://127.0.0.1:3306/testdb?"
+  			      .getConnection("jdbc:mysql://127.0.0.1:3306/treecuttingdb?"
   			          + "useSSL=false&user=" + username + "&password=" + password);
             System.out.println(connect);
+            System.out.println("Connection successfull");
         }
     }
-    
-    public List<user> listAllUsers() throws SQLException {
-        List<user> listUser = new ArrayList<user>();        
-        String sql = "SELECT * FROM User";      
-        connect_func("root","root1234");      
-        statement = (Statement) connect.createStatement();
-        ResultSet resultSet = statement.executeQuery(sql);
-         
-        while (resultSet.next()) {
-            String email = resultSet.getString("email");
-            String firstName = resultSet.getString("firstName");
-            String lastName = resultSet.getString("lastName");
-            String password = resultSet.getString("password");
-            String birthday = resultSet.getString("birthday");
-            String adress_street_num = resultSet.getString("adress_street_num"); 
-            String adress_street = resultSet.getString("adress_street"); 
-            String adress_city = resultSet.getString("adress_city"); 
-            String adress_state = resultSet.getString("adress_state"); 
-            String adress_zip_code = resultSet.getString("adress_zip_code"); 
-            int cash_bal = resultSet.getInt("cash_bal");
-            int PPS_bal = resultSet.getInt("PPS_bal");
 
-             
-            user users = new user(email,firstName, lastName, password, birthday, adress_street_num,  adress_street,  adress_city,  adress_state,  adress_zip_code, cash_bal,PPS_bal);
-            listUser.add(users);
-        }
-        System.out.println(listUser);
-        resultSet.close();
-        disconnect();        
-        return listUser;
-    }
-    
     protected void disconnect() throws SQLException {
         if (connect != null && !connect.isClosed()) {
         	connect.close();
@@ -118,98 +72,22 @@ public class userDAO
     
     public void insert(user users) throws SQLException {
     	connect_func("root","root1234");         
-		String sql = "insert into User(email, firstName, lastName, password, birthday,adress_street_num, adress_street,adress_city,adress_state,adress_zip_code,cash_bal,PPS_bal) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,? ,?)";
+		String sql = "insert into User(userName, password, role) values (?, ?, ?)";
 		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-			preparedStatement.setString(1, users.getEmail());
-			preparedStatement.setString(2, users.getFirstName());
-			preparedStatement.setString(3, users.getLastName());
-			preparedStatement.setString(4, users.getPassword());
-			preparedStatement.setString(5, users.getBirthday());
-			preparedStatement.setString(6, users.getAdress_street_num());		
-			preparedStatement.setString(7, users.getAdress_street());		
-			preparedStatement.setString(8, users.getAdress_city());		
-			preparedStatement.setString(9, users.getAdress_state());		
-			preparedStatement.setString(10, users.getAdress_zip_code());		
-			preparedStatement.setInt(11, users.getCash_bal());		
-			preparedStatement.setInt(12, users.getPPS_bal());		
+			preparedStatement.setString(1, users.getUsername());
+			preparedStatement.setString(2, users.getPassword());
+			preparedStatement.setString(3, users.getRole());		
 
 		preparedStatement.executeUpdate();
         preparedStatement.close();
     }
-    
-    public boolean delete(String email) throws SQLException {
-        String sql = "DELETE FROM User WHERE email = ?";        
-        connect_func("root","root1234");
-         
-        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-        preparedStatement.setString(1, email);
-         
-        boolean rowDeleted = preparedStatement.executeUpdate() > 0;
-        preparedStatement.close();
-        return rowDeleted;     
-    }
-     
-    public boolean update(user users) throws SQLException {
-        String sql = "update User set firstName=?, lastName =?,password = ?,birthday=?,adress_street_num =?, adress_street=?,adress_city=?,adress_state=?,adress_zip_code=?, cash_bal=?, PPS_bal =? where email = ?";
-        connect_func("root","root1234");
-        
-        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-        preparedStatement.setString(1, users.getEmail());
-		preparedStatement.setString(2, users.getFirstName());
-		preparedStatement.setString(3, users.getLastName());
-		preparedStatement.setString(4, users.getPassword());
-		preparedStatement.setString(5, users.getBirthday());
-		preparedStatement.setString(6, users.getAdress_street_num());		
-		preparedStatement.setString(7, users.getAdress_street());		
-		preparedStatement.setString(8, users.getAdress_city());		
-		preparedStatement.setString(9, users.getAdress_state());		
-		preparedStatement.setString(10, users.getAdress_zip_code());		
-		preparedStatement.setInt(11, users.getCash_bal());		
-		preparedStatement.setInt(12, users.getPPS_bal());
-         
-        boolean rowUpdated = preparedStatement.executeUpdate() > 0;
-        preparedStatement.close();
-        return rowUpdated;     
-    }
-    
-    public user getUser(String email) throws SQLException {
-    	user user = null;
-        String sql = "SELECT * FROM User WHERE email = ?";
-         
-        connect_func("root","root1234");
-         
-        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-        preparedStatement.setString(1, email);
-         
-        ResultSet resultSet = preparedStatement.executeQuery();
-         
-        if (resultSet.next()) {
-            String firstName = resultSet.getString("firstName");
-            String lastName = resultSet.getString("lastName");
-            String password = resultSet.getString("password");
-            String birthday = resultSet.getString("birthday");
-            String adress_street_num = resultSet.getString("adress_street_num"); 
-            String adress_street = resultSet.getString("adress_street"); 
-            String adress_city = resultSet.getString("adress_city"); 
-            String adress_state = resultSet.getString("adress_state"); 
-            String adress_zip_code = resultSet.getString("adress_zip_code"); 
-            int cash_bal = resultSet.getInt("cash_bal");
-            int PPS_bal = resultSet.getInt("PPS_bal");
-            user = new user(email, firstName, lastName, password, birthday, adress_street_num,  adress_street,  adress_city,  adress_state,  adress_zip_code,cash_bal,PPS_bal);
-        }
-         
-        resultSet.close();
-        statement.close();
-         
-        return user;
-    }
-    
-    public boolean checkEmail(String email) throws SQLException {
+   
+    public boolean checkUsername(String username) throws SQLException {
     	boolean checks = false;
-    	String sql = "SELECT * FROM User WHERE email = ?";
+    	String sql = "SELECT * FROM User WHERE username = ?";
     	connect_func("root","root1234");
     	preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-        preparedStatement.setString(1, email);
+        preparedStatement.setString(1, username);
         ResultSet resultSet = preparedStatement.executeQuery();
         
         System.out.println(checks);	
@@ -221,86 +99,232 @@ public class userDAO
         System.out.println(checks);
     	return checks;
     }
-    
-    public boolean checkPassword(String password) throws SQLException {
-    	boolean checks = false;
-    	String sql = "SELECT * FROM User WHERE password = ?";
+   
+    public String isValid(String username, String password) throws SQLException
+    {
+    	System.out.println("Inside isvalid");
+    	String sql = "SELECT * FROM User where username = ? and password = ?";
     	connect_func("root","root1234");
     	preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
-        preparedStatement.setString(1, password);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        
-        System.out.println(checks);	
-        
-        if (resultSet.next()) {
-        	checks = true;
-        }
-        
-        System.out.println(checks);
-       	return checks;
-    }
-    
-    
-    
-    public boolean isValid(String email, String password) throws SQLException
-    {
-    	String sql = "SELECT * FROM User";
-    	connect_func("root","root1234");
-    	statement = (Statement) connect.createStatement();
-    	ResultSet resultSet = statement.executeQuery(sql);
+        preparedStatement.setString(1, username);
+        preparedStatement.setString(2, password);
+    	ResultSet resultSet = preparedStatement.executeQuery();
     	
-    	resultSet.last();
-    	
-    	int setSize = resultSet.getRow();
-    	resultSet.beforeFirst();
-    	
-    	for(int i = 0; i < setSize; i++)
-    	{
-    		resultSet.next();
-    		if(resultSet.getString("email").equals(email) && resultSet.getString("password").equals(password)) {
-    			return true;
+    	if(resultSet.next()) {
+    			String role = getUserRole(username);
+    			System.out.println(role);
+    			return role;
     		}		
-    	}
-    	return false;
+    	return null;
     }
+    
+  public String getUserRole(String username) throws SQLException {
+	String sql = "SELECT Role FROM User WHERE username = ?";
+	connect_func("root","root1234");
+	preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+    preparedStatement.setString(1, username);
+    ResultSet resultSet = preparedStatement.executeQuery();
+   	String role = null;
+    if (resultSet.next()) {
+    	role = resultSet.getString("Role");
+    }
+    
+    System.out.println(role);
+   	return role;
+}
+
     
     
     public void init() throws SQLException, FileNotFoundException, IOException{
     	connect_func("root","root1234");
         statement =  (Statement) connect.createStatement();
         
-        String[] INITIAL = {"drop database if exists testdb; ",
-					        "create database testdb; ",
-					        "use testdb; ",
-					        "drop table if exists User; ",
-					        ("CREATE TABLE if not exists User( " +
-					            "email VARCHAR(50) NOT NULL, " + 
-					            "firstName VARCHAR(10) NOT NULL, " +
-					            "lastName VARCHAR(10) NOT NULL, " +
-					            "password VARCHAR(20) NOT NULL, " +
-					            "birthday DATE NOT NULL, " +
-					            "adress_street_num VARCHAR(4) , "+ 
-					            "adress_street VARCHAR(30) , "+ 
-					            "adress_city VARCHAR(20)," + 
-					            "adress_state VARCHAR(2),"+ 
-					            "adress_zip_code VARCHAR(5),"+ 
-					            "cash_bal DECIMAL(13,2) DEFAULT 1000,"+ 
-					            "PPS_bal DECIMAL(13,2) DEFAULT 0,"+
-					            "PRIMARY KEY (email) "+"); ")
+        String[] INITIAL = {"drop database if exists treecuttingdb; ",
+					        "create database treecuttingdb; ",
+					        "use treecuttingdb; ",
+					        "drop table if exists Client; ",
+					        ("CREATE TABLE if not exists Client( " +
+					        		"ClientID VARCHAR (50) PRIMARY KEY, "+
+					        		"FirstName VARCHAR (100)," +
+					        		"LastName VARCHAR (100), " +
+					        		"Address VARCHAR (255), " +
+					        		"CreditCardInfo VARCHAR (50), " +
+					        		"PhoneNumber VARCHAR (50), " +
+					        		"Email VARCHAR (100) "+"); "),
+					        "drop table if exists TreeRequest; ",
+					        ("CREATE TABLE TreeRequest ( "
+					        		+ "RequestID VARCHAR (100) PRIMARY KEY,"
+					        		+ "ClientID VARCHAR (50),"
+					        		+ "RequestDate DATE,"
+					        		+ "Status VARCHAR (100),"
+					        		+ "Note VARCHAR (255),"
+					        		+ "FOREIGN KEY (ClientID) REFERENCES Client (ClientID)"
+					        		+ ");"),
+					        "drop table if exists TreeInformation; ",
+					         ("CREATE TABLE TreeInformation ("
+					         		+ "TreeInfoID VARCHAR (100) PRIMARY KEY,"
+					         		+ "RequestID VARCHAR (100),"
+					         		+ "Size DECIMAL (5, 2),"
+					         		+ "Height DECIMAL (5, 2),"
+					         		+ "Location VARCHAR (100),"
+					         		+ "NearHouse BOOLEAN,"
+					         		+ "FOREIGN KEY (RequestID) REFERENCES TreeRequest (RequestID)"
+					         		+ ");"),
+					         "drop table if exists TreePicture; ",
+					         ("CREATE TABLE TreePicture ("
+					         		+ "PictureID VARCHAR (100) PRIMARY KEY,"
+					         		+ "PictureURL VARCHAR(255),"
+					         		+ "TreeInfoID VARCHAR (100),"
+					         		+ "FOREIGN KEY (TreeInfoID) REFERENCES TreeInformation(TreeInfoID)"
+					         		+ ");"),
+					         "drop table if exists Quote; ",
+					         ("CREATE TABLE Quote ("
+					         		+ "QuoteID VARCHAR (100) PRIMARY KEY,"
+					         		+ "RequestID VARCHAR (100),"
+					         		+ "QuoteDate DATE,"
+					         		+ "Price DECIMAL(10, 2),"
+					         		+ "TimeWindow VARCHAR(100),"
+					         		+ "Status VARCHAR(100),"
+					         		+ "Note VARCHAR (255),"
+					         		+ "FOREIGN KEY (RequestID) REFERENCES TreeRequest(RequestID)"
+					         		+ ");"),
+					         "drop table if exists OrderDetails; ",
+					         ("CREATE TABLE OrderDetails ("
+					         		+ "OrderID varchar(100) PRIMARY KEY,"
+					         		+ "QuoteID varchar(100),"
+					         		+ "OrderDate DATE,"
+					         		+ "Status VARCHAR(100),"
+					         		+ "FOREIGN KEY (QuoteID) REFERENCES Quote(QuoteID)"
+					         		+ ");"),
+					         "drop table if exists BillDetails; ",
+					         ("CREATE TABLE BillDetails ("
+					         		+ "BillID varchar(100) PRIMARY KEY,"
+					         		+ "OrderID varchar(100),"
+					         		+ "BilledDate DATE,"
+					         		+ "Amount DECIMAL(10, 2),"
+					         		+ "Status VARCHAR(100),"
+					         		+ "Note varchar(255),"
+					         		+ "FOREIGN KEY (OrderID) REFERENCES OrderDetails(OrderID)"
+					         		+ ");"),
+					         "drop table if exists Admin; ",
+					         ("CREATE TABLE Admin ("
+					         		+ "LoginID VARCHAR(100) PRIMARY KEY,"
+					        		+ "Password VARCHAR(100),"
+					         		+ "ActionPerformed VARCHAR(100),"
+					         		+ "Timestamp DATETIME"
+					         		+ ");"),
+					         "drop table if exists user; ",
+					         ("CREATE TABLE user ("
+					         		+ "ID INT AUTO_INCREMENT PRIMARY KEY,"
+					        		+ "Username VARCHAR(50) NOT NULL,"
+					         		+ "Password VARCHAR(255) NOT NULL,"
+					         		+ "Role ENUM('David Smith', 'Client', 'Admin Root') NOT NULL"
+					         		+ ");")
         					};
-        String[] TUPLES = {("insert into User(email, firstName, lastName, password, birthday, adress_street_num, adress_street, adress_city, adress_state, adress_zip_code, cash_bal, PPS_bal)"+
-        			"values ('susie@gmail.com', 'Susie ', 'Guzman', 'susie1234', '2000-06-27', '1234', 'whatever street', 'detroit', 'MI', '48202','1000', '0'),"+
-			    		 	"('don@gmail.com', 'Don', 'Cummings','don123', '1969-03-20', '1000', 'hi street', 'mama', 'MO', '12345','1000', '0'),"+
-			    	 	 	"('margarita@gmail.com', 'Margarita', 'Lawson','margarita1234', '1980-02-02', '1234', 'ivan street', 'tata','CO','12561','1000', '0'),"+
-			    		 	"('jo@gmail.com', 'Jo', 'Brady','jo1234', '2002-02-02', '3214','marko street', 'brat', 'DU', '54321','1000', '0'),"+
-			    		 	"('wallace@gmail.com', 'Wallace', 'Moore','wallace1234', '1971-06-15', '4500', 'frey street', 'sestra', 'MI', '48202','1000', '0'),"+
-			    		 	"('amelia@gmail.com', 'Amelia', 'Phillips','amelia1234', '2000-03-14', '1245', 'm8s street', 'baka', 'IL', '48000','1000', '0'),"+
-			    			"('sophie@gmail.com', 'Sophie', 'Pierce','sophie1234', '1999-06-15', '2468', 'yolos street', 'ides', 'CM', '24680','1000', '0'),"+
-			    			"('angelo@gmail.com', 'Angelo', 'Francis','angelo1234', '2021-06-14', '4680', 'egypt street', 'lolas', 'DT', '13579','1000', '0'),"+
-			    			"('rudy@gmail.com', 'Rudy', 'Smith','rudy1234', '1706-06-05', '1234', 'sign street', 'samo ne tu','MH', '09876','1000', '0'),"+
-			    			"('jeannette@gmail.com', 'Jeannette ', 'Stone','jeannette1234', '2001-04-24', '0981', 'snoop street', 'kojik', 'HW', '87654','1000', '0'),"+
-			    			"('root', 'default', 'default','root1234', '2020-01-02', '0000', 'Default', 'Default', '0', '00000','1000','1000000000');")
-			    			};
+        
+        String[] TUPLES = {
+        	    "INSERT INTO Client (ClientID, FirstName, LastName, Address, CreditCardInfo, PhoneNumber, Email) VALUES " +
+        	        "('1', 'John', 'Doe', '123 Main St', '1234-5678-9012-3456', '555-555-5555', 'john.doe@email.com')," +
+        	        "('2', 'Jane', 'Smith', '456 Elm St', '9876-5432-1098-7654', '666-666-6666', 'jane.smith@email.com')," +
+        	        "('3', 'Mike', 'Johnson', '789 Oak St', '5678-1234-9876-5432', '777-777-7777', 'mike.johnson@email.com')," +
+        	        "('4', 'Sarah', 'Brown', '101 Pine St', '4321-8765-5432-1098', '888-888-8888', 'sarah.brown@email.com')," +
+        	        "('5', 'David', 'Wilson', '1111 Cedar St', '8765-4321-7654-3210', '999-999-9999', 'david.wilson@email.com')," +
+        	        "('6', 'Linda', 'Lee', '2222 Birch St', '2345-6789-2109-8765', '101-101-1010', 'linda.lee@email.com')," +
+        	        "('7', 'Robert', 'Davis', '3333 Maple St', '6789-2345-4321-9876', '202-202-2020', 'robert.davis@email.com')," +
+        	        "('8', 'Emily', 'White', '4444 Redwood St', '8765-4321-7654-3210', '303-303-3030', 'emily.white@email.com')," +
+        	        "('9', 'Chris', 'Taylor', '5555 Walnut St', '1234-5678-9012-3456', '404-404-4040', 'chris.taylor@email.com')," +
+        	        "('10', 'Megan', 'Miller', '6666 Poplar St', '5678-1234-9876-5432', '505-505-5050', 'megan.miller@email.com')",
+
+        	    "INSERT INTO TreeRequest (RequestID, ClientID, RequestDate, Status, Note) VALUES " +
+        	        "('1', '1', '2023-01-01', 'Pending', 'Tree trimming needed')," +
+        	        "('2', '2', '2023-01-02', 'Pending', 'Tree removal requested')," +
+        	        "('3', '3', '2023-01-03', 'Completed', 'Tree assessment completed')," +
+        	        "('4', '4', '2023-01-04', 'In Progress', 'Emergency tree service')," +
+        	        "('5', '5', '2023-01-05', 'Pending', 'Tree inspection required')," +
+        	        "('6', '6', '2023-01-06', 'In Progress', 'Tree pruning in progress')," +
+        	        "('7', '7', '2023-01-07', 'Completed', 'Tree removal completed')," +
+        	        "('8', '8', '2023-01-08', 'Pending', 'Tree trimming needed')," +
+        	        "('9', '9', '2023-01-09', 'In Progress', 'Tree inspection in progress')," +
+        	        "('10', '10', '2023-01-10', 'Pending', 'Tree assessment required')",
+
+        	    "INSERT INTO TreeInformation (TreeInfoID, RequestID, Size, Height, Location, NearHouse) VALUES " +
+        	        "('1', '1', 10.5, 25.3, 'Front Yard', 1)," +
+        	        "('2', '2', 15.2, 30.0, 'Backyard', 0)," +
+        	        "('3', '3', 8.7, 20.1, 'Side Yard', 1)," +
+        	        "('4', '4', 12.3, 28.5, 'Front Yard', 1)," +
+        	        "('5', '5', 9.8, 22.0, 'Backyard', 0)," +
+        	        "('6', '6', 14.1, 32.7, 'Side Yard', 1)," +
+        	        "('7', '7', 11.0, 26.6, 'Front Yard', 1)," +
+        	        "('8', '8', 7.5, 18.4, 'Backyard', 0)," +
+        	        "('9', '9', 13.4, 31.2, 'Side Yard', 1)," +
+        	        "('10', '10', 10.9, 24.8, 'Front Yard', 1)",
+
+        	    "INSERT INTO TreePicture (PictureID, PictureURL, TreeInfoID) VALUES " +
+        	        "('1', 'http://example.com/tree1.jpg', '1')," +
+        	        "('2', 'http://example.com/tree2.jpg', '2')," +
+        	        "('3', 'http://example.com/tree3.jpg', '3')," +
+        	        "('4', 'http://example.com/tree4.jpg', '4')," +
+        	        "('5', 'http://example.com/tree5.jpg', '5')," +
+        	        "('6', 'http://example.com/tree6.jpg', '6')," +
+        	        "('7', 'http://example.com/tree7.jpg', '7')," +
+        	        "('8', 'http://example.com/tree8.jpg', '8')," +
+        	        "('9', 'http://example.com/tree9.jpg', '9')," +
+        	        "('10', 'http://example.com/tree10.jpg', '10')",
+
+        	    "INSERT INTO Quote (QuoteID, RequestID, QuoteDate, Price, TimeWindow, Status, Note) VALUES " +
+        	        "('1', '1', '2023-01-15', 500.00, '8:00 AM - 12:00 PM', 'Pending', 'Initial quote')," +
+        	        "('2', '2', '2023-01-16', 750.00, '9:00 AM - 1:00 PM', 'Pending', 'Custom quote')," +
+        	        "('3', '3', '2023-01-17', 400.00, '10:00 AM - 2:00 PM', 'Accepted', 'Standard quote')," +
+        	        "('4', '4', '2023-01-18', 600.00, '11:00 AM - 3:00 PM', 'Pending', 'Emergency quote')," +
+        	        "('5', '5', '2023-01-19', 550.00, '12:00 PM - 4:00 PM', 'Pending', 'Detailed quote')," +
+        	        "('6', '6', '2023-01-20', 700.00, '1:00 PM - 5:00 PM', 'Accepted', 'Custom quote')," +
+        	        "('7', '7', '2023-01-21', 800.00, '2:00 PM - 6:00 PM', 'Completed', 'Final quote')," +
+        	        "('8', '8', '2023-01-22', 450.00, '3:00 PM - 7:00 PM', 'Pending', 'Standard quote')," +
+        	        "('9', '9', '2023-01-23', 650.00, '4:00 PM - 8:00 PM', 'In Progress', 'Custom quote')," +
+        	        "('10', '10', '2023-01-24', 600.00, '5:00 PM - 9:00 PM', 'Pending', 'Standard quote')",
+
+        	    "INSERT INTO OrderDetails (OrderID, QuoteID, OrderDate, Status) VALUES " +
+        	        "('1', '1', '2023-01-25', 'Processing')," +
+        	        "('2', '2', '2023-01-26', 'Pending')," +
+        	        "('3', '3', '2023-01-27', 'Completed')," +
+        	        "('4', '4', '2023-01-28', 'In Progress')," +
+        	        "('5', '5', '2023-01-29', 'Processing')," +
+        	        "('6', '6', '2023-01-30', 'Pending')," +
+        	        "('7', '7', '2023-01-31', 'Completed')," +
+        	        "('8', '8', '2023-02-01', 'Processing')," +
+        	        "('9', '9', '2023-02-02', 'In Progress')," +
+        	        "('10', '10', '2023-02-03', 'Pending')",
+
+        	    "INSERT INTO BillDetails (BillID, OrderID, BilledDate, Amount, Status, Note) VALUES " +
+        	        "('1', '1', '2023-02-10', 500.00, 'Paid', 'Payment received')," +
+        	        "('2', '2', '2023-02-11', 750.00, 'Pending', 'Payment due')," +
+        	        "('3', '3', '2023-02-12', 400.00, 'Paid', 'Payment received')," +
+        	        "('4', '4', '2023-02-13', 600.00, 'Processing', 'Payment processing')," +
+        	        "('5', '5', '2023-02-14', 550.00, 'Pending', 'Payment pending')," +
+        	        "('6', '6', '2023-02-15', 700.00, 'Paid', 'Payment received')," +
+        	        "('7', '7', '2023-02-16', 800.00, 'Completed', 'Payment complete')," +
+        	        "('8', '8', '2023-02-17', 450.00, 'Pending', 'Payment due')," +
+        	        "('9', '9', '2023-02-18', 650.00, 'Processing', 'Payment processing')," +
+        	        "('10', '10', '2023-02-19', 600.00, 'Pending', 'Payment pending')",
+
+        	    "INSERT INTO Admin (LoginID, Password , ActionPerformed, Timestamp) VALUES " +
+        	        "('root', 'root1234', 'Database setup', '2023-03-01 10:00:00')," +
+        	        "('admin2','root1234', 'Data insertion', '2023-03-02 11:00:00')," +
+        	        "('admin3','root1234', 'Data insertion', '2023-03-03 12:00:00')," +
+        	        "('admin4','root1234', 'Data insertion', '2023-03-04 13:00:00')," +
+        	        "('admin5','root1234', 'Data insertion', '2023-03-05 14:00:00')," +
+        	        "('admin6','root1234', 'Data insertion', '2023-03-06 15:00:00')," +
+        	        "('admin7','root1234', 'Data insertion', '2023-03-07 16:00:00')," +
+        	        "('admin8','root1234', 'Data insertion', '2023-03-08 17:00:00')," +
+        	        "('admin9','root1234', 'Data insertion', '2023-03-09 18:00:00')," +
+        	        "('admin10','root1234', 'Data insertion', '2023-03-10 19:00:00')",
+        	        
+        	        "INSERT INTO User (Username, Password, Role) VALUES " +
+        	                "('davidsmith', 'davidsmith', 'David Smith')," +
+        	                "('clientuser', 'clientuser', 'Client')," +
+        	                "('adminroot', 'adminroot', 'Admin Root')"
+        	};
+
         
         //for loop to put these in database
         for (int i = 0; i < INITIAL.length; i++)

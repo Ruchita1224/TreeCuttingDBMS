@@ -8,4 +8,4 @@ Installation, configuration and running steps required for this project:
 5) Download MySQL Server on https://dev.mysql.com/downloads/mysql/
 6) Take the sql file and import in my sql workbench
 7) configure tomcat server
-8) Run the code
+8) Run the code on the server

@@ -90,7 +90,47 @@ public class treeRequestDAO
         disconnect();        
         return listTreeRequest;
     }
+    
+    public void insert(treeRequest treeRequest) throws SQLException {
+    	System.out.println("Inside insert treeRequest");
+    	connect_func("root","root1234");
+    	
+		String sql = "insert into treeRequest(RequestID, ClientID, RequestDate, Status, Note) values (?, ?, ?, ?, ?)";
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+			preparedStatement.setString(1, treeRequest.getRequestID());
+			preparedStatement.setString(2, treeRequest.getClientID());
+			preparedStatement.setDate(3, (java.sql.Date) treeRequest.getRequestDate());
+			preparedStatement.setString(4, treeRequest.getStatus());
+			preparedStatement.setString(5, treeRequest.getNote());
+			
+		preparedStatement.executeUpdate();
+		System.out.println("Updated tree request");
+        preparedStatement.close();
+    }
    
+    public treeRequest listParticularTreeRequest(String username) throws SQLException {
+    	System.out.println(username);
+        String sql = "SELECT * FROM TreeRequest where ClientID = ?";      
+        connect_func("root","root1234");
+        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+        preparedStatement.setString(1, username);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        System.out.println(resultSet);
+        if(resultSet.next()) {
+        	String requestID = resultSet.getString("RequestID");
+        	String clientID = resultSet.getString("ClientID");
+        	Date requestDate = resultSet.getDate("RequestDate");
+        	String status = resultSet.getString("Status");
+        	String note = resultSet.getString("Note");
+        	treeRequest treeRequest = new treeRequest(requestID, clientID, requestDate, status, note);
+        	 resultSet.close();
+             disconnect();        
+             return treeRequest;
+		}
+		return null;	
+
+       
+    }
     protected void disconnect() throws SQLException {
         if (connect != null && !connect.isClosed()) {
         	connect.close();

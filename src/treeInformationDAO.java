@@ -68,6 +68,8 @@ public class treeInformationDAO
         }
     }
     
+ 
+    
     public List<treeInformation> listAllTreeInformation() throws SQLException {
     	//System.out.println("inside admin");
         List<treeInformation> listTreeInformation = new ArrayList<treeInformation>();        
@@ -82,7 +84,7 @@ public class treeInformationDAO
         	double size = resultSet.getDouble("Size");
         	double height = resultSet.getDouble("Height");
         	String location = resultSet.getString("Location");
-        	boolean nearHouse = resultSet.getBoolean("NearHouse");
+        	String nearHouse = resultSet.getString("NearHouse");
 
         	treeInformation treeInformation = new treeInformation(treeInfoID, requestID, size, height, location, nearHouse);
 
@@ -93,6 +95,24 @@ public class treeInformationDAO
         resultSet.close();
         disconnect();        
         return listTreeInformation;
+    }
+    
+    public void insert(treeInformation treeInformation) throws SQLException {
+    	System.out.println("Inside insert treeInformation");
+    	connect_func("root","root1234");
+    	System.out.println(treeInformation.getTreeInfoID() + treeInformation.getRequestID() + treeInformation.getSize() + treeInformation.getHeight() + treeInformation.getLocation() + treeInformation.getNearHouse());
+		String sql = "insert into treeInformation(treeInfoID, requestID, size, height, location, nearHouse) values (?, ?, ?, ?, ? ,?)";
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+			preparedStatement.setString(1, treeInformation.getTreeInfoID());
+			preparedStatement.setString(2, treeInformation.getRequestID());
+			preparedStatement.setDouble(3, treeInformation.getSize());
+			preparedStatement.setDouble(4, treeInformation.getHeight());
+			preparedStatement.setString(5, treeInformation.getLocation());
+			preparedStatement.setString(6, treeInformation.getNearHouse());
+			
+
+		preparedStatement.executeUpdate();
+        preparedStatement.close();
     }
    
     protected void disconnect() throws SQLException {

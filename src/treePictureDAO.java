@@ -92,6 +92,21 @@ public class treePictureDAO
         disconnect();        
         return listTreePicture;
     }
+    
+    public void insert(treePicture treePicture) throws SQLException {
+    	System.out.println("Inside insert treeInformation");
+    	connect_func("root","root1234");         
+		String sql = "insert into treePicture(pictureID, pictureURL, treeInfoID) values (?, ?, ?)";
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+			preparedStatement.setString(1, treePicture.getPictureID());
+			preparedStatement.setString(2, treePicture.getPictureURL());
+			preparedStatement.setString(3, treePicture.getTreeInfoID());
+		
+			
+
+		preparedStatement.executeUpdate();
+        preparedStatement.close();
+    }
    
     protected void disconnect() throws SQLException {
         if (connect != null && !connect.isClosed()) {

@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -93,6 +94,76 @@ public class quoteDAO
         resultSet.close();
         disconnect();        
         return listQuote;
+    }
+    
+    public quote listParticularQuoteRequest(String username) throws SQLException {
+    	System.out.println(username);
+        String sql = "SELECT * from quote where RequestID in ( select RequestID from treerequest where ClientID = ? )";      
+        connect_func("root","root1234");
+        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+        preparedStatement.setString(1, username);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        System.out.println(resultSet);
+        if(resultSet.next()) {
+        	String quoteID = resultSet.getString("quoteID");
+        	String requestID = resultSet.getString("requestID");
+        	Date quoteDate = resultSet.getDate("quoteDate");
+        	Double price = resultSet.getDouble("price");
+        	String timeWindow = resultSet.getString("timeWindow");
+        	String status = resultSet.getString("Status");
+        	String note = resultSet.getString("Note");
+        	quote quote = new quote(quoteID, requestID, quoteDate, price, timeWindow, status, note);
+        	 resultSet.close();
+             disconnect();        
+             return quote;
+		}
+		return null;	
+
+       
+    }
+    
+    public void updateQuote(String quoteID, double price, String status, String note) throws SQLException {
+        try {
+            connect_func("root", "root1234");
+
+            String sql = "UPDATE quote SET Price = ?, Status = ?, Note = ? WHERE QuoteID = ?";
+            preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+
+            preparedStatement.setDouble(1, price);
+            preparedStatement.setString(2, status);
+            preparedStatement.setString(3, note);
+            preparedStatement.setString(4, quoteID);
+
+            preparedStatement.executeUpdate();
+            
+           
+
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            disconnect();
+        }
+    }
+
+    
+    public void insert(quote quote) throws SQLException {
+    	System.out.println("Inside insert quote");
+    	connect_func("root","root1234");
+    	
+		String sql = "insert into quote(QuoteID, RequestID, QuoteDate, Price, TimeWindow, Status, Note) values (?, ?, ?, ?, ?, ?, ?)";
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+			preparedStatement.setString(1, quote.getQuoteID());
+			preparedStatement.setString(2, quote.getRequestID());
+			preparedStatement.setDate(3, (java.sql.Date) quote.getQuoteDate());
+			preparedStatement.setDouble(4, quote.getPrice());
+			preparedStatement.setString(5, quote.getTimeWindow());
+			preparedStatement.setString(6, quote.getStatus());
+			preparedStatement.setString(7, quote.getNote());
+			
+		preparedStatement.executeUpdate();
+		System.out.println("Updated quote");
+        preparedStatement.close();
     }
    
     protected void disconnect() throws SQLException {

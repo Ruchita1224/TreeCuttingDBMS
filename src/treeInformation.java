@@ -4,9 +4,9 @@ public class treeInformation {
     protected double size;
     protected double height;
     protected String location;
-    protected boolean nearHouse;
+    protected String nearHouse;
 
-    public treeInformation(String treeInfoID, String requestID, double size, double height, String location, boolean nearHouse) {
+    public treeInformation(String treeInfoID, String requestID, double size, double height, String location, String nearHouse) {
         this.treeInfoID = treeInfoID;
         this.requestID = requestID;
         this.size = size;
@@ -55,11 +55,11 @@ public class treeInformation {
         this.location = location;
     }
 
-    public boolean isNearHouse() {
+    public String getNearHouse() {
         return nearHouse;
     }
 
-    public void setNearHouse(boolean nearHouse) {
+    public void setNearHouse(String nearHouse) {
         this.nearHouse = nearHouse;
     }
 }

@@ -94,6 +94,24 @@ public class clientDAO
         disconnect();        
         return listClient;
     }
+    
+    public void insert(client client) throws SQLException {
+    	System.out.println("Inside insert client");
+    	connect_func("root","root1234");
+    	
+		String sql = "insert into client(ClientID, FirstName, LastName, Address, CreditCardInfo, PhoneNumber, Email) values (?, ?, ?, ?, ?, ?, ?)";
+		preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+			preparedStatement.setString(1, client.getClientID());
+			preparedStatement.setString(2, client.getFirstName());
+			preparedStatement.setString(3, client.getLastName());
+			preparedStatement.setString(4, client.getAddress());
+			preparedStatement.setString(5, client.getCreditCardInfo());
+			preparedStatement.setString(6, client.getPhoneNumber());
+			preparedStatement.setString(7, client.getEmail());
+			
+		preparedStatement.executeUpdate();
+        preparedStatement.close();
+    }
    
     protected void disconnect() throws SQLException {
         if (connect != null && !connect.isClosed()) {

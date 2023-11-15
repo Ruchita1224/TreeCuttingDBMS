@@ -91,6 +91,29 @@ public class orderdetailsDAO
         disconnect();        
         return listOrderDetails;
     }
+    
+    public orderdetails listParticularOrder(String username) throws SQLException {
+    	System.out.println(username);
+        String sql = "Select * from OrderDetails where QuoteID in (SELECT quoteID from quote where RequestID in ( select RequestID from treerequest where ClientID = ? ))";      
+        connect_func("root","root1234");
+        preparedStatement = (PreparedStatement) connect.prepareStatement(sql);
+        preparedStatement.setString(1, username);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        System.out.println(resultSet);
+        if(resultSet.next()) {
+        	String orderID = resultSet.getString("OrderID");
+        	String quoteID = resultSet.getString("QuoteID");
+        	Date orderDate = resultSet.getDate("OrderDate");
+        	String status = resultSet.getString("Status");
+        	orderdetails orderDetails = new orderdetails(orderID, quoteID, orderDate, status);
+        	resultSet.close();
+            disconnect();        
+            return orderDetails;
+		}
+		return null;	
+
+       
+    }
    
     protected void disconnect() throws SQLException {
         if (connect != null && !connect.isClosed()) {

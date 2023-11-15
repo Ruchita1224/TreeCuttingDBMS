@@ -37,7 +37,7 @@ CREATE TABLE `admin` (
 
 LOCK TABLES `admin` WRITE;
 /*!40000 ALTER TABLE `admin` DISABLE KEYS */;
-INSERT INTO `admin` VALUES ('abc','abc','Account created','2023-10-26 00:00:00'),('admin10','root1234','Data insertion','2023-03-10 19:00:00'),('admin2','root1234','Data insertion','2023-03-02 11:00:00'),('admin3','root1234','Data insertion','2023-03-03 12:00:00'),('admin4','root1234','Data insertion','2023-03-04 13:00:00'),('admin5','root1234','Data insertion','2023-03-05 14:00:00'),('admin6','root1234','Data insertion','2023-03-06 15:00:00'),('admin7','root1234','Data insertion','2023-03-07 16:00:00'),('admin8','root1234','Data insertion','2023-03-08 17:00:00'),('admin9','root1234','Data insertion','2023-03-09 18:00:00'),('root','root1234','Database setup','2023-03-01 10:00:00');
+INSERT INTO `admin` VALUES ('abc','abc','Account created','2023-10-26 00:00:00'),('admin10','Root*1234','Data insertion','2023-03-10 19:00:00'),('admin2','Root*1234','Data insertion','2023-03-02 11:00:00'),('admin3','Root*1234','Data insertion','2023-03-03 12:00:00'),('admin4','Root*1234','Data insertion','2023-03-04 13:00:00'),('admin5','Root*1234','Data insertion','2023-03-05 14:00:00'),('admin6','Root*1234','Data insertion','2023-03-06 15:00:00'),('admin7','Root*1234','Data insertion','2023-03-07 16:00:00'),('admin8','Root*1234','Data insertion','2023-03-08 17:00:00'),('admin9','Root*1234','Data insertion','2023-03-09 18:00:00'),('root','Root*1234','Database setup','2023-03-01 10:00:00');
 /*!40000 ALTER TABLE `admin` ENABLE KEYS */;
 UNLOCK TABLES;
 

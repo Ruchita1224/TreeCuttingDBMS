@@ -1,86 +1,56 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="ISO-8859-1">
-    <title>Login to Database</title>
+    <meta charset="UTF-8">
+    <title>David Smith's Tree Cutting - User Login Portal</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: Brush Script MT, Brush Script Std, cursive	;
+            background-color: ##f0f0f0;
+            background: url(https://get.pxhere.com/photo/pine-pine-forest-forest-jungle-blur-bokeh-blurry-green-wood-focus-mountain-hill-mount-leaves-leaf-grass-dark-dark-green-peace-tree-nature-woodland-ecosystem-woody-plant-trunk-old-growth-forest-spruce-fir-forest-grove-wilderness-temperate-coniferous-forest-branch-biome-deciduous-sunlight-temperate-broadleaf-and-mixed-forest-birch-plant-sky-1451539.jpg);
+            background-size: cover;
         }
-        center h1 {
-            color: #0074D9;
-        }
-        div {
+        .container {
+        	font-family: sans-seriff;
+            margin-top: 50px;
+            max-width: 400px;
             background-color: #fff;
             border: 1px solid #ccc;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             padding: 20px;
-            margin: 20px auto;
-            width: 400px;
+            border-radius:10px;
         }
-        p {
-            color: red;
-        }
-        form table {
-            width: 100%;
-        }
-        th {
-            text-align: right;
-            padding-right: 10px;
-        }
-        td {
-            padding: 5px;
-        }
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 5px;
-        }
-        input[type="submit"] {
-            background-color: #0074D9;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-        a {
-            text-decoration: none;
-            color: #0074D9;
-        }
+        
     </style>
 </head>
 <body>
-    <center><h1>Welcome to Login page</h1></center>
-    <div align="center">
-        <p>${loginFailedStr}</p>
+	<br>
+	<br>
+	<div class="text-center">
+    	<br>
+    	<br>
+    	<h1 class="display-4 font-weight-bold-italic" style="color: #ffffff; text-shadow: 2px 2px 4px #000000;">Welcome to David-Smith's Tree Cutting Service!</h1>
+	</div>
+	<br>
+    <div class="container">
+        <p class="text-danger">${loginFailedStr}</p>
         <form action="login" method="post">
-            <table border="0" cellpadding="5">
-                <tr>
-                    <th>Username:</th>
-                    <td>
-                        <input type="text" name="username" size="45" autofocus>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Password:</th>
-                    <td>
-                        <input type="password" name="password" size="45">
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2" align="center">
-                        <input type="submit" value="Login">
-                    </td>
-                </tr>
-            </table>
-            <a href="register.jsp" target="_self">Register Here</a>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" class="form-control" id="username" name="username" autofocus required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+		<button type="submit" class="btn btn-primary btn-lg mx-auto d-block" value="Login">Login</button>
         </form>
+        <p class="mt-3"><a href="register.jsp">Register Here</a></p>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -62,7 +62,7 @@ public class ControlServlet extends HttpServlet {
 	    
 	    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	        String action = request.getServletPath();
-	        System.out.println(action);
+	       // System.out.println(action);
 	    
 	    try {
       	switch(action) {  
@@ -88,12 +88,33 @@ public class ControlServlet extends HttpServlet {
         	case "/submitQuote":
         		submitQuote(request,response);
         		break;
-        	case "/editQuote":
-        		System.out.println("Inside edit quote");
-        	    editQuote(request, response);
-        	    break;
+//        	case "/editQuote":
+//        		System.out.println("Inside edit quote");
+//        	    editQuote(request, response);
+//        	    break;
         	case "/logout":
         		logout(request,response);
+        		break;
+        	case "/QuoteListforDavid":
+        		QuoteListforDavid(request, response);
+        		break;
+        	case "/editQuoteDavid":
+        		editQuoteDavid(request, response);
+        		break;
+        	case "/editQuoteClient":
+        		editQuoteClient(request, response);
+        		break;
+        	case "/ApprovedQuoteDavid":
+        		ApprovedQuoteDavid(request, response);
+        		break;
+        	case "/ApprovedQuoteClient":
+        		ApprovedQuoteClient(request, response);
+        		break;
+        	case "/DenyQuoteDavid":
+        		DenyQuoteDavid(request, response);
+        		break;
+        	case "/DenyQuoteClient":
+        		DenyQuoteClient(request, response);
         		break;
 	    	}
 	    }
@@ -102,7 +123,21 @@ public class ControlServlet extends HttpServlet {
 	    	}
 	    }
         	
-	    protected void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+	    private void QuoteListforDavid(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException  
+	    {
+          
+	    	 try {
+		            // Call the method to update the quote in your DAO
+	            	request.setAttribute("listQuoteDavid", quoteDAO.listAllQuoteforDavid());
+	            	System.out.println("returned");
+                	request.getRequestDispatcher("david_smith_dashboard.jsp").forward(request, response);
+		        } catch (SQLException e) {
+		            e.printStackTrace(); // Handle the exception appropriately
+		        }
+
+	    }
+
+		protected void login(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
 	    	 String username = request.getParameter("username");
 	    	 String password = request.getParameter("password");
 	    	 
@@ -124,6 +159,7 @@ public class ControlServlet extends HttpServlet {
 	                	HttpSession session = request.getSession();
 	                	session.setAttribute("loginID", loginID);
 	                	session.setAttribute("listQuote", quoteDAO.listParticularQuoteRequest(loginID));
+	                	session.setAttribute("listOrderDetails", orderdetailsDAO.listParticularOrder(loginID));
 	                	request.getRequestDispatcher("client_dashboard.jsp").forward(request, response);
 	                } else if  ("Admin Root".equals(role)) {
 	                	request.setAttribute("listAdmin", adminDAO.listAllAdmins());
@@ -187,6 +223,34 @@ public class ControlServlet extends HttpServlet {
 	        Random random = new Random();
 	        return random.nextInt(max - min) + min;
 	    }
+	    private String generateRandomReqID() {
+		    // Generate a random order ID as per your requirements
+		    // For example, you can concatenate a prefix with a random number
+		    String prefix = "REQ";
+		    int randomSuffix = generateRandom(1000, 9999);
+		    return prefix + randomSuffix;
+		}
+	    private String generateRandomQuoID() {
+		    // Generate a random order ID as per your requirements
+		    // For example, you can concatenate a prefix with a random number
+		    String prefix = "Quo";
+		    int randomSuffix = generateRandom(1000, 9999);
+		    return prefix + randomSuffix;
+		}
+	    private String generateRandomInfoID() {
+		    // Generate a random order ID as per your requirements
+		    // For example, you can concatenate a prefix with a random number
+		    String prefix = "Info";
+		    int randomSuffix = generateRandom(1000, 9999);
+		    return prefix + randomSuffix;
+		}
+	    private String generateRandomPicID() {
+		    // Generate a random order ID as per your requirements
+		    // For example, you can concatenate a prefix with a random number
+		    String prefix = "Pic";
+		    int randomSuffix = generateRandom(1000, 9999);
+		    return prefix + randomSuffix;
+		}
 	    
 	    private void submitQuote(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException, NumberFormatException {
 	    	String clientID = request.getParameter("clientID");
@@ -209,19 +273,19 @@ public class ControlServlet extends HttpServlet {
 	    	String price = request.getParameter("price");
 
 	   	 	//Create new tree request
-	    	String requestId = String.valueOf(generateRandom(11,50));
+	    	String requestId = generateRandomReqID();
 	    	java.sql.Date requestDate = new java.sql.Date(requestDate1.getTime());
 	    	treeRequest treeRequest = new treeRequest(requestId, clientID, requestDate , "Quote Requested" , note);
 	    	treeRequestDAO.insert(treeRequest);
 	    	
 	    	//Create new quote request
-	    	String quoteId = String.valueOf(generateRandom(11,50));
+	    	String quoteId = generateRandomQuoID();
 	    	quote quote = new quote(quoteId,requestId,requestDate,Double.parseDouble(price),timeWindow,"Quote submitted -client",note);
 	    	quoteDAO.insert(quote); 
 	    	
 	    	//Create new tree information
 	    	System.out.println("here");
-	    	String treeInfoID = String.valueOf(generateRandom(11,50));
+	    	String treeInfoID = generateRandomInfoID();
 	    	System.out.println(requestId);
 	    	System.out.println(location);
 	    	System.out.println(nearHouse);
@@ -232,13 +296,14 @@ public class ControlServlet extends HttpServlet {
 	    	treeInformationDAO.insert(treeInformation);
 	    	
 	    	//Create new tree picture 
-	    	String pictureID = String.valueOf(generateRandom(11,50));
+	    	String pictureID = generateRandomPicID();
 	    	treePicture treePicture = new treePicture(pictureID,pictureURL,treeInfoID);
 	    	treePictureDAO.insert(treePicture);
+	    	response.sendRedirect("client_dashboard.jsp");
 	    }   
 	    
 	    
-	    private void editQuote(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    private void editQuoteClient(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	        String quoteID = request.getParameter("quoteID");
 	        System.out.println(quoteID);
 	        double updatedPrice = Double.parseDouble(request.getParameter("price"));
@@ -251,15 +316,108 @@ public class ControlServlet extends HttpServlet {
 
 	            // Set an attribute in the session to store the success message
 	            HttpSession session = request.getSession();
-	            session.setAttribute("updateMessage", "Quote updated successfully");
+	            session.setAttribute("quoteUpdated", true);
 
-	            // Redirect back to the client dashboard or wherever needed
-	            response.sendRedirect("client_dashboard.jsp");
+	    	    // Redirect back to the Negotiate.jsp or wherever needed
+	    	    response.sendRedirect("Negotiate-client.jsp");
 	        } catch (SQLException e) {
 	            e.printStackTrace(); // Handle the exception appropriately
 	        }
 	    }
 
+	    private void editQuoteDavid(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    	String quoteID = request.getParameter("quoteID");
+	    	double updatedPrice = Double.parseDouble(request.getParameter("price"));
+	    	String updatedStatus = request.getParameter("status");
+	    	String updatedNote = request.getParameter("note");
+
+	    	try {
+	    	    // Call the method to update the quote in your DAO
+	    	    quoteDAO.updateQuoteDavid(quoteID, updatedPrice, updatedStatus, updatedNote);
+
+	    	    // Set an attribute in the session to store the success message
+	    	    HttpSession session = request.getSession();
+	    	    session.setAttribute("quoteUpdated", true);
+
+	    	    // Redirect back to the Negotiate.jsp or wherever needed
+	    	    response.sendRedirect("Negotiate.jsp");
+	    	} catch (SQLException e) {
+	    	    e.printStackTrace(); // Handle the exception appropriately
+	    	}
+	    }
+	    
+	    private void ApprovedQuoteDavid(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    	String quoteID = request.getParameter("quoteID");
+
+	    	try {
+	    	    // Call the method to update the quote in your DAO
+	    	    quoteDAO.updateQuoteStatusApproved(quoteID);
+
+	    	    // Set an attribute in the session to store the success message
+	    	    HttpSession session = request.getSession();
+	    	    session.setAttribute("quoteApproved", true);
+
+	    	    // Redirect back to the Negotiate.jsp or wherever needed
+	    	    response.sendRedirect("ApprovedQuote-client.jsp");
+	    	} catch (SQLException e) {
+	    	    e.printStackTrace(); // Handle the exception appropriately
+	    	}
+	    }
+	    
+	    private void ApprovedQuoteClient(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    	String quoteID = request.getParameter("quoteID");
+
+	    	try {
+	    	    // Call the method to update the quote in your DAO
+	    	    quoteDAO.updateQuoteStatusApproved(quoteID);
+
+	    	    // Set an attribute in the session to store the success message
+	    	    HttpSession session = request.getSession();
+	    	    session.setAttribute("quoteApproved", true);
+
+	    	    // Redirect back to the Negotiate.jsp or wherever needed
+	    	    response.sendRedirect("ApprovedQuote-client.jsp");
+	    	} catch (SQLException e) {
+	    	    e.printStackTrace(); // Handle the exception appropriately
+	    	}
+	    }
+	    
+	    private void DenyQuoteDavid(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    	String quoteID = request.getParameter("quoteID");
+
+	    	try {
+	    	    // Call the method to update the quote in your DAO
+	    	    quoteDAO.updateQuoteStatusDenied(quoteID);
+
+	    	    // Set an attribute in the session to store the success message
+	    	    HttpSession session = request.getSession();
+	    	    session.setAttribute("quoteDenied", true);
+
+	    	    // Redirect back to the Negotiate.jsp or wherever needed
+	    	    response.sendRedirect("DeniedQuote.jsp");
+	    	} catch (SQLException e) {
+	    	    e.printStackTrace(); // Handle the exception appropriately
+	    	}
+	    }
+	    
+	    private void DenyQuoteClient(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	    	String quoteID = request.getParameter("quoteID");
+
+	    	try {
+	    	    // Call the method to update the quote in your DAO
+	    	    quoteDAO.updateQuoteStatusDenied(quoteID);
+
+	    	    // Set an attribute in the session to store the success message
+	    	    HttpSession session = request.getSession();
+	    	    session.setAttribute("quoteDenied", true);
+
+	    	    // Redirect back to the Negotiate.jsp or wherever needed
+	    	    response.sendRedirect("DeniedQuote-client.jsp");
+	    	} catch (SQLException e) {
+	    	    e.printStackTrace(); // Handle the exception appropriately
+	    	}
+	    }
+	    
 	    private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 	    	currentUser = "";
         		response.sendRedirect("login.jsp");

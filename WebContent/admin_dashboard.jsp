@@ -7,7 +7,8 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Root page</title>
+<title>Admin Dashboard</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <style>
 body {
 	font-family: Arial, sans-serif;
@@ -16,21 +17,13 @@ body {
 	padding: 0;
 }
 
-h1 {
-	background-color: #0074D9;
-	color: #fff;
-	padding: 20px;
-	margin: 0;
-	text-align: center;
-}
-
 .container {
 	max-width: 1200px;
 	margin: 20px auto;
 	padding: 20px;
 	background-color: #fff;
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-	border-radius: 5px;
+	border-radius: 10px;
 }
 
 .action-btn {
@@ -65,24 +58,21 @@ th {
 	color: #fff;
 }
 
-caption {
-	font-size: 24px;
-	font-weight: bold;
-	margin-bottom: 10px;
-}
 </style>
 </head>
 <body>
-	<center>
-		<h1>Welcome Admin! You have been successfully logged in</h1>
-	</center>
-	<div class="container">
-		<a class="action-btn" href="initialize">Initialize the Database</a> <a
-			href="login.jsp">Logout</a>
-	</div>
-	<div class="container">
-		<table>
-			<caption>List of Admins</caption>
+		<div class="container">
+		<br>
+		<h1 class="display-4 font-weight-bold-italic text-center" style="color: #000000; text-shadow: 2px 2px 4px #ffffff; font-family: Brush Script MT, Brush Script Std, cursive;">Welcome, Admin!</h1>
+		<br>
+		<br>
+		<a class="btn btn-primary action-btn" href="initialize">Initialize the Database</a> 
+		<br>
+		<a class="btn btn-secondary" href="login.jsp">Logout</a>
+		<br>
+		<br>
+		<h1 class="display-4 font-weight-bold-italic text-center" style="color: #000000; text-shadow: 2px 2px 4px #ffffff; font-family: Brush Script MT, Brush Script Std, cursive;">List of Admins</h1>
+		<table class="table">
 			<tr>
 				<th>loginID</th>
 				<th>ActionPerformed</th>
@@ -99,9 +89,8 @@ caption {
 	</div>
 	<div class="container">
 		<table border="1" cellpadding="6">
-			<caption>
-				List of Bill Details
-			</caption>
+			<h1 class="display-4 font-weight-bold-italic text-center" style="color: #000000; text-shadow: 2px 2px 4px #ffffff; font-family: Brush Script MT, Brush Script Std, cursive;">List of Bill Details</h1>
+			<br>
 			<tr>
 				<th>Bill ID</th>
 				<th>Order ID</th>
@@ -124,9 +113,8 @@ caption {
 	</div>
 	<div class="container">
 		<table border="1" cellpadding="6">
-			<caption>
-				List of Clients
-			</caption>
+			<h1 class="display-4 font-weight-bold-italic text-center" style="color: #000000; text-shadow: 2px 2px 4px #ffffff; font-family: Brush Script MT, Brush Script Std, cursive;">List of Clients</h1>
+			<br>
 			<tr>
 				<th>Client ID</th>
 				<th>First Name</th>
@@ -151,9 +139,8 @@ caption {
 	</div>
 	<div class="container">
 		<table border="1" cellpadding="6">
-			<caption>
-				List of Order Details
-			</caption>
+			<h1 class="display-4 font-weight-bold-italic text-center" style="color: #000000; text-shadow: 2px 2px 4px #ffffff; font-family: Brush Script MT, Brush Script Std, cursive;">List of Order Details</h1>
+			<br>
 			<tr>
 				<th>Order ID</th>
 				<th>Quote ID</th>
@@ -172,9 +159,8 @@ caption {
 	</div>
 	<div class="container">
 		<table border="1" cellpadding="6">
-			<caption>
-				List of Quotes
-			</caption>
+			<h1 class="display-4 font-weight-bold-italic text-center" style="color: #000000; text-shadow: 2px 2px 4px #ffffff; font-family: Brush Script MT, Brush Script Std, cursive;">List of Quotes</h1>
+			<br>
 			<tr>
 				<th>Quote ID</th>
 				<th>Request ID</th>
@@ -199,9 +185,8 @@ caption {
 	</div>
 	 <div class="container">
 		<table border="1" cellpadding="6">
-			<caption>
-				List of Tree Information
-			</caption>
+			<h1 class="display-4 font-weight-bold-italic text-center" style="color: #000000; text-shadow: 2px 2px 4px #ffffff; font-family: Brush Script MT, Brush Script Std, cursive;">List of Tree Information</h1>
+			<br>
 			<tr>
 				<th>Tree Info ID</th>
 				<th>Request ID</th>
@@ -224,9 +209,8 @@ caption {
 	</div>
 	<div class="container">
 		<table border="1" cellpadding="6">
-			<caption>
-				List of Tree Pictures
-			</caption>
+			<h1 class="display-4 font-weight-bold-italic text-center" style="color: #000000; text-shadow: 2px 2px 4px #ffffff; font-family: Brush Script MT, Brush Script Std, cursive;">List of Tree Pictures</h1>
+			<br>
 			<tr>
 				<th>Picture ID</th>
 				<th>Picture URL</th>
@@ -243,9 +227,8 @@ caption {
 	</div>
 	<div class="container">
 		<table border="1" cellpadding="6">
-			<caption>
-				List of Tree Requests
-			</caption>
+			<h1 class="display-4 font-weight-bold-italic text-center" style="color: #000000; text-shadow: 2px 2px 4px #ffffff; font-family: Brush Script MT, Brush Script Std, cursive;">List of Tree Requests</h1>
+			<br>
 			<tr>
 				<th>Request ID</th>
 				<th>Client ID</th>

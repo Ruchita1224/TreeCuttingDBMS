@@ -24,8 +24,8 @@ import java.util.List;
 /**
  * Servlet implementation class Connect
  */
-@WebServlet("/billDetailsDAO")
-public class billDetailsDAO 
+@WebServlet("/clientSummaryDAO")
+public class clientSummaryDAO 
 {
 	private static final long serialVersionUID = 1L;
 	private Connection connect = null;
@@ -33,7 +33,7 @@ public class billDetailsDAO
 	private PreparedStatement preparedStatement = null;
 	private ResultSet resultSet = null;
 	
-	public billDetailsDAO(){}
+	public clientSummaryDAO(){}
 	
 	/** 
 	 * @see HttpServlet#HttpServlet()
@@ -68,60 +68,55 @@ public class billDetailsDAO
         }
     }
     
-    public List<billDetails> listAllBillDetails() throws SQLException {
+    public List<clientSummary> listClientSummary() throws SQLException {
     	//System.out.println("inside admin");
-        List<billDetails> listBillDetails = new ArrayList<billDetails>();        
-        String sql = "SELECT * FROM BillDetails";      
+        List<clientSummary> listClientSummary = new ArrayList<clientSummary>();        
+        String sql = "SELECT c.ClientID, c.FirstName, c.LastName,  COUNT(tr.RequestID) AS TotalTrees, SUM(q.Price) AS TotalDueAmount, COALESCE(SUM(CASE WHEN bd.Status = 'Paid' THEN bd.Amount ELSE 0 END), 0) AS TotalPaidAmount, GROUP_CONCAT(DISTINCT tr.RequestDate) AS WorkDoneDates FROM Client c "
+        		+ "LEFT JOIN TreeRequest tr ON c.ClientID = tr.ClientID "
+        		+ "LEFT JOIN Quote q ON tr.RequestID = q.RequestID "
+        		+ "LEFT JOIN OrderDetails od ON q.QuoteID = od.QuoteID "
+        		+ "LEFT JOIN BillDetails bd ON od.OrderID = bd.OrderID "
+        		+ "WHERE bd.Status = 'Paid' "
+        		+ "GROUP BY c.ClientID, c.FirstName, c.LastName;";      
         connect_func("root","root1234");      
         statement = (Statement) connect.createStatement();
         ResultSet resultSet = statement.executeQuery(sql);
          
         while (resultSet.next()) {
-        	String billID = resultSet.getString("BillID");
-        	String orderID = resultSet.getString("OrderID");
-        	Date billedDate = resultSet.getDate("BilledDate");
-        	double amount = resultSet.getDouble("Amount");
-        	String status = resultSet.getString("Status");
-        	String note = resultSet.getString("Note");
+        	String clientID = resultSet.getString("ClientID");
+        	String firstName = resultSet.getString("FirstName");
+        	String lastName = resultSet.getString("LastName");
+        	int totalTrees = resultSet.getInt("TotalTrees");
+            double totalDueAmount = resultSet.getDouble("TotalDueAmount");
+            double totalPaidAmount = resultSet.getDouble("TotalPaidAmount");
+            String workDoneDatesString = resultSet.getString("WorkDoneDates");
+            List<String> workDoneDates = parseWorkDoneDates(workDoneDatesString);
 
-             
-            billDetails billDetails = new billDetails(billID, orderID, billedDate, amount, status, note);
-            listBillDetails.add(billDetails);
+            clientSummary clientSummary = new clientSummary(clientID, firstName, lastName,
+                    totalTrees, totalDueAmount, totalPaidAmount, workDoneDates);
+            listClientSummary.add(clientSummary);
         }
-        System.out.println(listBillDetails);
+        System.out.println(listClientSummary);
         resultSet.close();
         disconnect();        
-        return listBillDetails;
+        return listClientSummary;
     }
     
-    public List<billDetails> listOverDueBills() throws SQLException {
-    	System.out.println("listOverDueBills");
-        List<billDetails> listOverDueBills = new ArrayList<billDetails>();        
-        String sql = "SELECT BillID, OrderID, BilledDate, Amount, Status, Note "
-        		+ "FROM treecuttingdb.BillDetails "
-        		+ "WHERE Status <> 'Paid' "
-        		+ "  AND BilledDate <= DATE_SUB(NOW(), INTERVAL 1 WEEK);";      
-        connect_func("root","root1234");      
-        statement = (Statement) connect.createStatement();
-        ResultSet resultSet = statement.executeQuery(sql);
-         
-        while (resultSet.next()) {
-        	String billID = resultSet.getString("BillID");
-        	String orderID = resultSet.getString("OrderID");
-        	Date billedDate = resultSet.getDate("BilledDate");
-        	double amount = resultSet.getDouble("Amount");
-        	String status = resultSet.getString("Status");
-        	String note = resultSet.getString("Note");
-
-        	
-            billDetails billDetails = new billDetails(billID, orderID, billedDate, amount, status, note);
-            listOverDueBills.add(billDetails);
+    private List<String> parseWorkDoneDates(String workDoneDatesString) {
+        List<String> workDoneDates = new ArrayList<>();
+        if (workDoneDatesString != null) {
+            String[] dateArray = workDoneDatesString.split(",");
+            for (String date : dateArray) {
+                workDoneDates.add(date.trim());
+            }
         }
-        System.out.println(listOverDueBills);
-        resultSet.close();
-        disconnect();        
-        return listOverDueBills;
+        return workDoneDates;
     }
+    
+  
+    
+  
+    
    
     protected void disconnect() throws SQLException {
         if (connect != null && !connect.isClosed()) {

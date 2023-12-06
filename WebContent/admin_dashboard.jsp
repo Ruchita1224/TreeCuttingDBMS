@@ -68,6 +68,18 @@ th {
 		<br>
 		<a class="btn btn-primary action-btn" href="initialize">Initialize the Database</a> 
 		<br>
+		<br>
+		<a class="btn btn-primary action-btn" href="OverDueBills">Overdue Bills</a> 
+		<br>
+		<br>
+		<a class="btn btn-primary action-btn" href="BadClients">Bad clients</a> 
+		<br>
+		<br>
+		<a class="btn btn-primary action-btn" href="GoodClients">Good Clients</a> 
+		<br>
+		<br>
+		<a class="btn btn-primary action-btn" href="ClientSummary">Statistics</a> 
+		<br>
 		<a class="btn btn-secondary" href="login.jsp">Logout</a>
 		<br>
 		<br>

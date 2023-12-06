@@ -34,6 +34,7 @@ public class ControlServlet extends HttpServlet {
 	    private treeInformationDAO treeInformationDAO = new treeInformationDAO();
 	    private treePictureDAO treePictureDAO = new treePictureDAO();
 	    private treeRequestDAO treeRequestDAO = new treeRequestDAO();
+	    private clientSummaryDAO clientSummaryDAO = new clientSummaryDAO();
 	    
 	    private String currentUser;
 	    private HttpSession session=null;
@@ -53,6 +54,7 @@ public class ControlServlet extends HttpServlet {
 	    	treeInformationDAO = new treeInformationDAO();
 	    	treePictureDAO = new treePictureDAO();
 	    	treeRequestDAO = new treeRequestDAO();
+	    	clientSummaryDAO = new clientSummaryDAO();
 	    	currentUser= "";
 	    }
 	    
@@ -98,6 +100,30 @@ public class ControlServlet extends HttpServlet {
         	case "/QuoteListforDavid":
         		QuoteListforDavid(request, response);
         		break;
+        	case "/OverDueBills":
+        		System.out.println("listOverDueBills-cs");
+        		request.setAttribute("listOverDueBills", billDetailsDAO.listOverDueBills());
+        		request.getRequestDispatcher("OverDueBills.jsp").forward(request, response);
+        		//OverDueBills(request, response);
+        		break;
+        	case "/BadClients":
+        		System.out.println("listBadClients-cs");
+        		request.setAttribute("listBadClients", clientDAO.listBadClients());
+        		request.getRequestDispatcher("BadClients.jsp").forward(request, response);
+        		//OverDueBills(request, response);
+        		break;
+        	case "/GoodClients":
+        		System.out.println("listGoodClients-cs");
+        		request.setAttribute("listGoodClients", clientDAO.listGoodClients());
+        		request.getRequestDispatcher("GoodClients.jsp").forward(request, response);
+        		//OverDueBills(request, response);
+        		break;
+        	case "/ClientSummary":
+        		System.out.println("listClientSummary-cs");
+        		request.setAttribute("listClientSummary", clientSummaryDAO.listClientSummary());
+        		request.getRequestDispatcher("Statistics.jsp").forward(request, response);
+        		//OverDueBills(request, response);
+        		break;
         	case "/editQuoteDavid":
         		editQuoteDavid(request, response);
         		break;
@@ -131,6 +157,20 @@ public class ControlServlet extends HttpServlet {
 	            	request.setAttribute("listQuoteDavid", quoteDAO.listAllQuoteforDavid());
 	            	System.out.println("returned");
                 	request.getRequestDispatcher("david_smith_dashboard.jsp").forward(request, response);
+		        } catch (SQLException e) {
+		            e.printStackTrace(); // Handle the exception appropriately
+		        }
+
+	    }
+	    private void OverDueBills(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException  
+	    {
+          
+	    	 try {
+		            // Call the method to update the quote in your DAO
+	    		 System.out.println("gome here");
+	            	request.setAttribute("listOverDueBills", billDetailsDAO.listOverDueBills());
+	            	System.out.println("returned");
+                	request.getRequestDispatcher("OverDueBills.jsp").forward(request, response);
 		        } catch (SQLException e) {
 		            e.printStackTrace(); // Handle the exception appropriately
 		        }

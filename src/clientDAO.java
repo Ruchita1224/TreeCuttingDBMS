@@ -95,6 +95,84 @@ public class clientDAO
         return listClient;
     }
     
+    public List<client> listGoodClients() throws SQLException {
+    	//System.out.println("inside admin");
+        List<client> listGoodClients = new ArrayList<client>();        
+        String sql = "SELECT c.ClientID, c.FirstName, c.LastName, c.Address, c.CreditCardInfo, c.PhoneNumber, c.Email "
+        		+ "FROM Client c "
+        		+ "WHERE EXISTS ( "
+        		+ "    SELECT 1 "
+        		+ "    FROM BillDetails bd "
+        		+ "    JOIN OrderDetails od ON bd.OrderID = od.OrderID "
+        		+ "    JOIN Quote q ON od.QuoteID = q.QuoteID "
+        		+ "    JOIN TreeRequest tr ON q.RequestID = tr.RequestID "
+        		+ "    WHERE tr.ClientID = c.ClientID "
+        		+ "      AND bd.Status = 'Paid' "
+        		+ "      AND bd.BilledDate BETWEEN tr.RequestDate AND DATE_ADD(tr.RequestDate, INTERVAL 1 DAY) "
+        		+ "); "
+        		+ "";      
+        connect_func("root","root1234");      
+        statement = (Statement) connect.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+         
+        while (resultSet.next()) {
+        	String clientID = resultSet.getString("ClientID");
+        	String firstName = resultSet.getString("FirstName");
+        	String lastName = resultSet.getString("LastName");
+        	String address = resultSet.getString("Address");
+        	String creditCardInfo = resultSet.getString("CreditCardInfo");
+        	String phoneNumber = resultSet.getString("PhoneNumber");
+        	String email = resultSet.getString("Email");
+
+        	client clients = new client(clientID, firstName, lastName, address, creditCardInfo, phoneNumber, email);
+
+        	listGoodClients.add(clients);
+        }
+        System.out.println(listGoodClients);
+        resultSet.close();
+        disconnect();        
+        return listGoodClients;
+    }
+    
+    public List<client> listBadClients() throws SQLException {
+    	//System.out.println("inside admin");
+        List<client> listBadClients = new ArrayList<client>();        
+        String sql = "SELECT c.ClientID, c.FirstName, c.LastName, c.Address, c.CreditCardInfo, c.PhoneNumber, c.Email\r\n"
+        		+ "FROM Client c "
+        		+ "WHERE NOT EXISTS ( "
+        		+ "    SELECT 1 "
+        		+ "    FROM BillDetails bd "
+        		+ "    JOIN OrderDetails od ON bd.OrderID = od.OrderID "
+        		+ "    JOIN Quote q ON od.QuoteID = q.QuoteID "
+        		+ "    JOIN TreeRequest tr ON q.RequestID = tr.RequestID "
+        		+ "    WHERE tr.ClientID = c.ClientID "
+        		+ "      AND bd.Status <> 'Paid' "
+        		+ "      AND bd.BilledDate <= DATE_SUB(NOW(), INTERVAL 1 WEEK) "
+        		+ "); "
+        		+ "";      
+        connect_func("root","root1234");      
+        statement = (Statement) connect.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+         
+        while (resultSet.next()) {
+        	String clientID = resultSet.getString("ClientID");
+        	String firstName = resultSet.getString("FirstName");
+        	String lastName = resultSet.getString("LastName");
+        	String address = resultSet.getString("Address");
+        	String creditCardInfo = resultSet.getString("CreditCardInfo");
+        	String phoneNumber = resultSet.getString("PhoneNumber");
+        	String email = resultSet.getString("Email");
+
+        	client clients = new client(clientID, firstName, lastName, address, creditCardInfo, phoneNumber, email);
+
+        	listBadClients.add(clients);
+        }
+        System.out.println(listBadClients);
+        resultSet.close();
+        disconnect();        
+        return listBadClients;
+    }
+    
     public void insert(client client) throws SQLException {
     	System.out.println("Inside insert client");
     	connect_func("root","root1234");
